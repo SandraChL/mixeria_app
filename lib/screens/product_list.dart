@@ -7,6 +7,7 @@ import '../models/product_model.dart';
 import '../data/products_repository.dart';
 import '../data/fake_products_repository.dart';
 import '../utils/colors.dart';
+import '../widgets/app_footer.dart';
 import '../widgets/product_card.dart';
 
 import '../models/cart_item.dart';
@@ -278,7 +279,7 @@ class _ProductListPageState extends State<ProductListPage> {
                   },
                 ),
               ),
-
+              const SizedBox(height: 10),
               // ===== BOTÓN ORDENAR =====
               SafeArea(
                 top: false,
@@ -366,8 +367,8 @@ class _ProductListPageState extends State<ProductListPage> {
                       ),
                       child: Text(
                         totalPieces > 0
-                            ? 'Ordenar ($totalPieces ${totalPieces == 1 ? "pieza" : "piezas"})'
-                            : 'Ordenar',
+                            ? 'Agregar ($totalPieces ${totalPieces == 1 ? "pieza" : "piezas"})'
+                            : 'Agregar',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: totalPieces > 0 ? Colors.white : Colors.black,
@@ -377,6 +378,9 @@ class _ProductListPageState extends State<ProductListPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
+              // Footer fijo
+              const AppFooter(),
             ],
           );
         },

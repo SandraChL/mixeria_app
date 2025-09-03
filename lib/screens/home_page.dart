@@ -22,9 +22,10 @@ import '../widgets/category_card.dart';
 
 import 'product_list.dart';
 import 'start_order_page.dart';
+import '../widgets/app_footer.dart'; // 👈 IMPORTANTE
 
 class HomePage extends StatefulWidget {
-    final int orderNumber;
+  final int orderNumber;
 
   const HomePage({
     super.key,
@@ -32,15 +33,11 @@ class HomePage extends StatefulWidget {
     this.userRepo,
     this.cartRepo,
     this.categoriesRepo,
-    
   });
-
 
   final UserRepository? userRepo;
   final CartRepository? cartRepo;
   final CategoriesRepository? categoriesRepo;
-
-
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -94,13 +91,19 @@ class _HomePageState extends State<HomePage> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const StartOrderPage()),
-            (route) => false, // elimina historial para que no regrese a Home
+            (route) => false,
           );
         },
         onCartTap: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => CartPage(cartRepo: _cartRepo)),
+            MaterialPageRoute(
+              builder:
+                  (_) => CartPage(
+                    cartRepo: _cartRepo,
+                    orderNumber: widget.orderNumber,
+                  ),
+            ),
           );
         },
       ),
@@ -140,7 +143,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
 
-      // ===== BODY: Grid de categorías =====
+      // ===== BODY: Grid de categorías con footer =====
       body: FutureBuilder<List<CategoryModel>>(
         future: _futureCategories ??= _catRepo.fetchCategories(),
         builder: (context, snapshot) {
@@ -176,52 +179,58 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: Text('No hay categorías disponibles.'));
           }
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              int cross = 2;
-              if (width >= 600) cross = 3;
-              if (width >= 900) cross = 4;
+          return Column(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+                    int cross = 2;
+                    if (width >= 600) cross = 3;
+                    if (width >= 900) cross = 4;
 
-              return GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: cross,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1,
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, i) {
-                  final c = categories[i];
-                  final provider =
-                      c.isNetwork
-                          ? NetworkImage(c.imageUrl)
-                          : AssetImage(c.imageUrl) as ImageProvider;
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(12),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: cross,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: categories.length,
+                      itemBuilder: (context, i) {
+                        final c = categories[i];
+                        final provider =
+                            c.isNetwork
+                                ? NetworkImage(c.imageUrl)
+                                : AssetImage(c.imageUrl) as ImageProvider;
 
-                  return CategoryCard(
-                    title: c.title,
-                    background: c.background,
-                    image: provider,
-                    onTap: () {
-                      //NAVEGAR A LA PANTALLA DE PRODUCTOS
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => ProductListPage(
-                                categoryId: c.id,
-                                title: c.title,
-                                cartRepo: _cartRepo, // para agregar al carrito
-                                // productsRepo: ApiProductsRepository(), // cuando tengas API
+                        return CategoryCard(
+                          title: c.title,
+                          background: c.background,
+                          image: provider,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ProductListPage(
+                                      categoryId: c.id,
+                                      title: c.title,
+                                      cartRepo: _cartRepo,
+                                    ),
                               ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              // Footer fijo
+              const AppFooter(),
+            ],
           );
         },
       ),

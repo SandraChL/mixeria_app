@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 import '../utils/order_manager.dart';
+import '../widgets/app_footer.dart';
 import 'home_page.dart'; // ajusta si tu ruta es distinta
 
 class StartOrderPage extends StatelessWidget {
@@ -12,6 +13,10 @@ class StartOrderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
+
+      // 👇 Footer fijo en la parte inferior
+      bottomNavigationBar: const AppFooter(),
+
       body: SafeArea(
         child: Center(
           child: Padding(
